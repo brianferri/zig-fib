@@ -1,17 +1,17 @@
 const std = @import("std");
 
-pub const digits_t = u64;
+pub const digit_t = u64;
 
 pub const Number = struct {
-    bytes: []digits_t,
+    bytes: []digit_t,
     length: usize,
 };
 
-fn ndigit_estimate(index: digits_t) usize {
-    return (index + @bitSizeOf(digits_t) - 1) / @bitSizeOf(digits_t) + 1;
+fn ndigit_estimate(index: digit_t) usize {
+    return (index + @bitSizeOf(digit_t) - 1) / @bitSizeOf(digit_t) + 1;
 }
 
-fn accumulate(a: []digits_t, b: []const digits_t, ndigits: usize) u1 {
+fn accumulate(a: []digit_t, b: []const digit_t, ndigits: usize) u1 {
     var carry: u1 = 0;
     var offset: usize = 0;
     while (offset < ndigits) : (offset += 1) {
@@ -28,18 +28,18 @@ fn accumulate(a: []digits_t, b: []const digits_t, ndigits: usize) u1 {
     return carry;
 }
 
-fn swap(lhs: *[]digits_t, rhs: *[]digits_t) void {
+fn swap(lhs: *[]digit_t, rhs: *[]digit_t) void {
     const tmp = lhs.*;
     lhs.* = rhs.*;
     rhs.* = tmp;
 }
 
-pub fn fibonacci(index: digits_t, allocator: std.mem.Allocator) !Number {
+pub fn fibonacci(index: digit_t, allocator: std.mem.Allocator) !Number {
     const ndigits_max = ndigit_estimate(index);
-    std.debug.print("Allocating {} digits of size {}.\n", .{ ndigits_max, @sizeOf(digits_t) });
+    std.debug.print("Allocating {} digits of size {}.\n", .{ ndigits_max, @sizeOf(digit_t) });
 
-    var cur = try allocator.alloc(digits_t, ndigits_max);
-    var next = try allocator.alloc(digits_t, ndigits_max);
+    var cur = try allocator.alloc(digit_t, ndigits_max);
+    var next = try allocator.alloc(digit_t, ndigits_max);
     defer allocator.free(next);
 
     cur[0] = 0;
@@ -54,6 +54,6 @@ pub fn fibonacci(index: digits_t, allocator: std.mem.Allocator) !Number {
 
     return Number{
         .bytes = cur,
-        .length = ndigits * @sizeOf(digits_t),
+        .length = ndigits * @sizeOf(digit_t),
     };
 }

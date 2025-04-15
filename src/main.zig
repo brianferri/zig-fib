@@ -3,7 +3,7 @@ const fib_lib = @import("zig_fib_lib");
 
 const fibonacci = fib_lib.fibonacci;
 const Number = fib_lib.Number;
-const digits_t = fib_lib.digits_t;
+const digit_t = fib_lib.digit_t;
 
 const FIRST_CHECKPOINT = 93;
 const SECOND_CHECKPOINT = 0x2d7;
@@ -50,7 +50,7 @@ fn measureFibonacciCall(args: *FibonacciArgs, allocator: std.mem.Allocator) !voi
 fn evaluateFibonacci(index: u64, allocator: std.mem.Allocator) !FibonacciArgs {
     var args: FibonacciArgs = .{
         .index = index,
-        .result = Number{ .bytes = &[_]digits_t{}, .length = 0 },
+        .result = Number{ .bytes = &[_]digit_t{}, .length = 0 },
         .duration = Timespec{ .sec = 0, .nsec = 0 },
         .thread_completed = false,
     };
@@ -93,12 +93,12 @@ pub fn main() !void {
                 break;
             }
 
+            const byte_count = args.result.length;
             var result: u64 = 0;
             for (args.result.bytes, 0..) |byte, i| {
                 result |= (@as(u64, byte)) << @intCast(i * 8);
             }
 
-            const byte_count = args.result.length;
             if (byte_count < 8) {
                 const shift_size: u6 = @intCast(byte_count * 8);
                 const mask = (@as(u64, 1) << shift_size) - 1;
