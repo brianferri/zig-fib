@@ -1,0 +1,10 @@
+{
+    "configurations": [
+      {
+        "name": "(lldb) Launch - Debug",
+        "type": "lldb",
+        "request": "launch",
+        "program": "${workspaceFolder}/zig-out/bin/zig_fib"
+      },
+    ]
+  }
