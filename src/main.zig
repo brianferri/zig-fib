@@ -3,6 +3,7 @@ const fib_lib = @import("zig_fib_lib");
 
 const fibonacci = fib_lib.fibonacci;
 const Number = fib_lib.Number;
+const digits_t = fib_lib.digits_t;
 
 const FIRST_CHECKPOINT = 93;
 const SECOND_CHECKPOINT = 0x2d7;
@@ -39,7 +40,7 @@ fn measureFibonacciCall(args: *FibonacciArgs, allocator: std.mem.Allocator) !voi
     const start_time = std.time.nanoTimestamp();
     args.result = try fibonacci(args.index, allocator);
     const end_time = std.time.nanoTimestamp();
-    const delta_ns: i128 = end_time - start_time;
+    const delta_ns = end_time - start_time;
 
     args.duration.sec = @intCast(@divTrunc(delta_ns, std.time.ns_per_s));
     args.duration.nsec = @intCast(@mod(delta_ns, std.time.ns_per_s));
@@ -49,7 +50,7 @@ fn measureFibonacciCall(args: *FibonacciArgs, allocator: std.mem.Allocator) !voi
 fn evaluateFibonacci(index: u64, allocator: std.mem.Allocator) !FibonacciArgs {
     var args: FibonacciArgs = .{
         .index = index,
-        .result = Number{ .bytes = &[_]u8{}, .length = 0 },
+        .result = Number{ .bytes = &[_]digits_t{}, .length = 0 },
         .duration = Timespec{ .sec = 0, .nsec = 0 },
         .thread_completed = false,
     };
@@ -85,8 +86,9 @@ pub fn main() !void {
         var a: u64 = 0;
         var b: u64 = 1;
         var tmp: u64 = undefined;
-        while (cur_idx <= FIRST_CHECKPOINT) {
+        while (cur_idx <= FIRST_CHECKPOINT) : (cur_idx += 1) {
             var args = try evaluateFibonacci(cur_idx, allocator);
+            defer allocator.free(args.result.bytes);
             if (!args.thread_completed or !less(args.duration, SOFT_CUTOFF)) {
                 break;
             }
@@ -113,18 +115,15 @@ pub fn main() !void {
                 best_idx = cur_idx;
             }
 
-            allocator.free(args.result.bytes);
-
             tmp = a + b;
             a = b;
             b = tmp;
-            cur_idx += 1;
         }
     }
 
     // Second Checkpoint
     {
-        while (cur_idx <= SECOND_CHECKPOINT) {
+        while (cur_idx <= SECOND_CHECKPOINT) : (cur_idx += 1) {
             var args = try evaluateFibonacci(cur_idx, allocator);
             if (!args.thread_completed or !less(args.duration, SOFT_CUTOFF)) {
                 break;
@@ -134,7 +133,6 @@ pub fn main() !void {
             if (less(args.duration, HARD_CUTOFF)) {
                 best_idx = cur_idx;
             }
-            cur_idx += 1;
         }
     }
 
