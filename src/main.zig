@@ -86,7 +86,7 @@ pub fn main() !void {
         var a: u64 = 0;
         var b: u64 = 1;
         var tmp: u64 = undefined;
-        while (cur_idx <= FIRST_CHECKPOINT) : (cur_idx += 1) {
+        while (cur_idx < FIRST_CHECKPOINT) : (cur_idx += 1) {
             var args = try evaluateFibonacci(cur_idx, allocator);
             defer allocator.free(args.result.bytes);
             if (!args.thread_completed or !less(args.duration, SOFT_CUTOFF)) {
@@ -109,12 +109,7 @@ pub fn main() !void {
                 best_idx = cur_idx;
             }
 
-            const sum = @addWithOverflow(a, b);
-            if (sum[1] == 1) {
-                std.debug.print("Overflow detected at F({})!\n", .{cur_idx});
-                break;
-            }
-            tmp = sum[0];
+            tmp = a + b;
             a = b;
             b = tmp;
         }
