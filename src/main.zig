@@ -109,7 +109,12 @@ pub fn main() !void {
                 best_idx = cur_idx;
             }
 
-            tmp = a + b;
+            const sum = @addWithOverflow(a, b);
+            if (sum[1] == 1) {
+                std.debug.print("Overflow detected at F({})!\n", .{cur_idx});
+                break;
+            }
+            tmp = sum[0];
             a = b;
             b = tmp;
         }
