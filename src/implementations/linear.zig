@@ -8,7 +8,7 @@ pub const Number = struct {
 };
 
 fn ndigit_estimate(index: digit_t) usize {
-    return (index + @bitSizeOf(digit_t) - 1) / @bitSizeOf(digit_t) + 1;
+    return (index + 1024 - 1) / 1024 + 1;
 }
 
 fn accumulate(a: []digit_t, b: []const digit_t, ndigits: usize) u1 {
@@ -36,7 +36,6 @@ fn swap(lhs: *[]digit_t, rhs: *[]digit_t) void {
 
 pub fn fibonacci(index: digit_t, allocator: std.mem.Allocator) !Number {
     const ndigits_max = ndigit_estimate(index);
-    std.debug.print("Allocating {} digits of size {}.\n", .{ ndigits_max, @sizeOf(digit_t) });
 
     var cur = try allocator.alloc(digit_t, ndigits_max);
     var next = try allocator.alloc(digit_t, ndigits_max);

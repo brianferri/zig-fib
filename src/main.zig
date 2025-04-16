@@ -93,19 +93,13 @@ pub fn main() !void {
                 break;
             }
 
-            const byte_count = args.result.length;
-            var result: u64 = 0;
-            for (args.result.bytes, 0..) |byte, i| {
-                result |= (@as(u64, byte)) << @intCast(i * 8);
+            const result: *u64 = @alignCast(@ptrCast(args.result.bytes));
+            if (args.result.length < @sizeOf(u64)) {
+                const shift_size: u6 = @intCast(args.result.length * 8);
+                result.* &= (@as(u64, @intCast(1)) << shift_size) - 1;
             }
 
-            if (byte_count < 8) {
-                const shift_size: u6 = @intCast(byte_count * 8);
-                const mask = (@as(u64, 1) << shift_size) - 1;
-                result &= mask;
-            }
-
-            if (result != a) {
+            if (result.* != a) {
                 std.debug.print("Failed to correctly compute F({}).\nExpected {}, but received {}.\n", .{ cur_idx, a, result });
                 return;
             }
