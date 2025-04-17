@@ -5,6 +5,12 @@ pub const digit_t = u8;
 pub const Number = struct {
     bytes: []digit_t,
     length: usize,
+
+    pub fn print(self: Number) !void {
+        const writer = std.io.getStdOut().writer();
+        const result: *u64 = @alignCast(@ptrCast(self.bytes));
+        try writer.print("{d}", .{result.*});
+    }
 };
 
 pub fn fibonacci(n: u64, allocator: std.mem.Allocator) !Number {

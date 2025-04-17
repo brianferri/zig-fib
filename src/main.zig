@@ -33,6 +33,7 @@ fn less(lhs: Timespec, rhs: Timespec) bool {
 }
 
 fn report(args: *const FibonacciArgs) void {
+    args.result.print() catch {};
     std.debug.print("{:20} | {}.{:09} s | {} B\n", .{ args.index, args.duration.sec, args.duration.nsec, args.result.length });
 }
 
