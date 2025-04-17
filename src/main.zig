@@ -33,7 +33,7 @@ fn less(lhs: Timespec, rhs: Timespec) bool {
 }
 
 fn report(args: *const FibonacciArgs, allocator: std.mem.Allocator) !void {
-    std.debug.print("{:20} | {d}.{:010} s | {d: >16} B | {s} \n", .{
+    std.debug.print("|{:18} | {d}.{:010} s | {d: >16} B | {s} |\n", .{
         args.index,
         args.duration.sec,
         args.duration.nsec,
@@ -84,8 +84,8 @@ pub fn main() !void {
     var cur_idx: u64 = 0;
     var best_idx: u64 = 0;
 
-    std.debug.print("#   Fibonacci index  |    Time (s)    |    Size (bytes)    |   Number   \n", .{});
-    std.debug.print("# -------------------+----------------+--------------------+------------\n", .{});
+    std.debug.print("|  Fibonacci index  |    Time (s)    |    Size (bytes)    |   Number   |\n", .{});
+    std.debug.print("| ----------------- | -------------- | ------------------ | ---------- |\n", .{});
 
     // First Checkpoint
     {
