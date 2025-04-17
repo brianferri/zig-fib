@@ -106,7 +106,7 @@ pub fn main() !void {
             }
 
             if (result.* != a) {
-                std.debug.print("Failed to correctly compute F({}).\nExpected {}, but received {}.\n", .{ cur_idx, a, result });
+                std.debug.print("Failed to correctly compute F({}).\nExpected {}, but received {}.\n", .{ cur_idx, a, result.* });
                 return;
             }
 
