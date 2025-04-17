@@ -6,10 +6,9 @@ pub const Number = struct {
     bytes: []digit_t,
     length: usize,
 
-    pub fn print(self: Number) !void {
-        const writer = std.io.getStdOut().writer();
+    pub fn print(self: Number, allocator: std.mem.Allocator) ![]u8 {
         const result: *u64 = @alignCast(@ptrCast(self.bytes));
-        try writer.print("{d}", .{result.*});
+        return try std.fmt.allocPrintZ(allocator, "{d}", .{result.*});
     }
 };
 

@@ -32,9 +32,14 @@ fn less(lhs: Timespec, rhs: Timespec) bool {
     return lhs.sec < rhs.sec or (lhs.sec == rhs.sec and lhs.nsec < rhs.nsec);
 }
 
-fn report(args: *const FibonacciArgs) void {
-    args.result.print() catch {};
-    std.debug.print("{:20} | {}.{:09} s | {} B\n", .{ args.index, args.duration.sec, args.duration.nsec, args.result.length });
+fn report(args: *const FibonacciArgs, allocator: std.mem.Allocator) !void {
+    std.debug.print("{:20} | {d}.{:010} s | {d: >16} B | {s} \n", .{
+        args.index,
+        args.duration.sec,
+        args.duration.nsec,
+        args.result.length,
+        try args.result.print(allocator),
+    });
 }
 
 fn measureFibonacciCall(args: *FibonacciArgs, allocator: std.mem.Allocator) !void {
@@ -79,8 +84,8 @@ pub fn main() !void {
     var cur_idx: u64 = 0;
     var best_idx: u64 = 0;
 
-    std.debug.print("#   Fibonacci index  |   Time (s)   | Size (bytes)\n", .{});
-    std.debug.print("# -------------------+--------------+--------------\n", .{});
+    std.debug.print("#   Fibonacci index  |    Time (s)    |    Size (bytes)    |   Number   \n", .{});
+    std.debug.print("# -------------------+----------------+--------------------+------------\n", .{});
 
     // First Checkpoint
     {
@@ -105,7 +110,7 @@ pub fn main() !void {
                 return;
             }
 
-            report(&args);
+            try report(&args, allocator);
             if (less(args.duration, HARD_CUTOFF)) {
                 best_idx = cur_idx;
             }
@@ -124,7 +129,7 @@ pub fn main() !void {
                 break;
             }
 
-            report(&args);
+            try report(&args, allocator);
             if (less(args.duration, HARD_CUTOFF)) {
                 best_idx = cur_idx;
             }
@@ -153,7 +158,7 @@ pub fn main() !void {
             if ((cur_idx > best_idx) and (!args.thread_completed or !less(args.duration, SOFT_CUTOFF))) {
                 break;
             }
-            report(&args);
+            try report(&args, allocator);
             if ((cur_idx > best_idx) and less(args.duration, HARD_CUTOFF)) {
                 best_idx = cur_idx;
             }

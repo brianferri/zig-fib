@@ -6,21 +6,12 @@ pub const Number = struct {
     bytes: []digit_t,
     length: usize,
 
-    pub fn print(self: Number) !void {
-        // TODO maybe pass this as an argument
-        const allocator = std.heap.page_allocator;
-        try self.printDecimal(allocator);
-    }
-
-    fn printDecimal(self: Number, allocator: std.mem.Allocator) !void {
-        const writer = std.io.getStdOut().writer();
-
+    pub fn print(self: Number, allocator: std.mem.Allocator) ![]u8 {
         var temp = try allocator.alloc(digit_t, self.bytes.len);
         defer allocator.free(temp);
         @memcpy(temp, self.bytes);
 
         var digits = std.ArrayList(u8).init(allocator);
-        defer digits.deinit();
 
         while (true) {
             var remainder: u64 = 0;
@@ -36,10 +27,13 @@ pub const Number = struct {
             try digits.append(@intCast(remainder + '0'));
             if (all_zero) break;
         }
+
         var i: usize = digits.items.len;
+        var reversed = try allocator.alloc(u8, digits.items.len);
         while (i > 0) : (i -= 1) {
-            try writer.writeByte(digits.items[i - 1]);
+            reversed[i - 1] = digits.items[digits.items.len - i];
         }
+        return reversed;
     }
 };
 
