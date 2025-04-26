@@ -155,11 +155,9 @@ pub fn fibonacci(index: u64, allocator: std.mem.Allocator) !Number {
 
     var fib = try allocator.alloc(digit_t, TUPLE_LEN * ndigits_max);
     var accum = try allocator.alloc(digit_t, TUPLE_LEN * ndigits_max);
-    var scratchFib = try allocator.alloc(digit_t, TUPLE_LEN * ndigits_max);
-    var scratchAccum = try allocator.alloc(digit_t, TUPLE_LEN * ndigits_max);
+    var scratch = try allocator.alloc(digit_t, TUPLE_LEN * ndigits_max);
     defer allocator.free(accum);
-    defer allocator.free(scratchFib);
-    defer allocator.free(scratchAccum);
+    defer allocator.free(scratch);
 
     var fib_len: usize = 1;
     var accum_len: usize = 1;
@@ -175,19 +173,19 @@ pub fn fibonacci(index: u64, allocator: std.mem.Allocator) !Number {
     var idx = index;
     while (idx != 0) : (idx >>= 1) {
         if (idx & 1 != 0) {
-            zero_out(scratchFib);
+            zero_out(scratch);
 
-            multiply_twice(A(scratchFib), B(scratchFib), A(fib), A(accum), B(accum), fib_len, accum_len);
-            multiply_once(A(scratchFib), C(scratchFib), B(fib), B(accum), fib_len, accum_len);
-            fib_len = multiply_twice_maxlen(B(scratchFib), C(scratchFib), C(accum), B(fib), C(fib), accum_len, fib_len);
-            swap(&fib, &scratchFib);
+            multiply_twice(A(scratch), B(scratch), A(fib), A(accum), B(accum), fib_len, accum_len);
+            multiply_once(A(scratch), C(scratch), B(fib), B(accum), fib_len, accum_len);
+            fib_len = multiply_twice_maxlen(B(scratch), C(scratch), C(accum), B(fib), C(fib), accum_len, fib_len);
+            swap(&fib, &scratch);
         }
-        zero_out(scratchAccum);
+        zero_out(scratch);
 
-        multiply_twice(A(scratchAccum), B(scratchAccum), A(accum), A(accum), B(accum), accum_len, accum_len);
-        multiply_once(A(scratchAccum), C(scratchAccum), B(accum), B(accum), accum_len, accum_len);
-        accum_len = multiply_twice_maxlen(B(scratchAccum), C(scratchAccum), C(accum), B(accum), C(accum), accum_len, accum_len);
-        swap(&accum, &scratchAccum);
+        multiply_twice(A(scratch), B(scratch), A(accum), A(accum), B(accum), accum_len, accum_len);
+        multiply_once(A(scratch), C(scratch), B(accum), B(accum), accum_len, accum_len);
+        accum_len = multiply_twice_maxlen(B(scratch), C(scratch), C(accum), B(accum), C(accum), accum_len, accum_len);
+        swap(&accum, &scratch);
     }
 
     return Number{
