@@ -3,6 +3,7 @@ const fib_lib = @import("zig_fib_lib");
 
 const options = @import("options");
 const print_numbers = options.print_numbers;
+const use_csv_fmt = options.use_csv_fmt;
 
 const fibonacci = fib_lib.fibonacci;
 const Number = fib_lib.Number;
@@ -35,22 +36,59 @@ fn less(lhs: Timespec, rhs: Timespec) bool {
     return lhs.sec < rhs.sec or (lhs.sec == rhs.sec and lhs.nsec < rhs.nsec);
 }
 
-fn report(args: *const FibonacciArgs, allocator: std.mem.Allocator) !void {
-    if (print_numbers) {
-        std.debug.print("|{:18} | {d}.{:010} s | {d: >16} B | {s} |\n", .{
-            args.index,
-            args.duration.sec,
-            args.duration.nsec,
-            args.result.length,
-            try args.result.print(allocator),
-        });
+fn printReportHeader() void {
+    if (use_csv_fmt) {
+        if (print_numbers) {
+            std.debug.print("Fibonacci index,Time (s),Size (bytes),Number\n", .{});
+        } else {
+            std.debug.print("Fibonacci index,Time (s),Size (bytes)\n", .{});
+        }
     } else {
-        std.debug.print("|{:18} | {d}.{:010} s | {d: >16} B |\n", .{
-            args.index,
-            args.duration.sec,
-            args.duration.nsec,
-            args.result.length,
-        });
+        if (print_numbers) {
+            std.debug.print("|  Fibonacci index  |    Time (s)    |    Size (bytes)    |   Number   |\n", .{});
+            std.debug.print("| ----------------- | -------------- | ------------------ | ---------- |\n", .{});
+        } else {
+            std.debug.print("|  Fibonacci index  |    Time (s)    |    Size (bytes)    |\n", .{});
+            std.debug.print("| ----------------- | -------------- | ------------------ |\n", .{});
+        }
+    }
+}
+
+fn report(args: *const FibonacciArgs, allocator: std.mem.Allocator) !void {
+    if (use_csv_fmt) {
+        if (print_numbers) {
+            std.debug.print("{},{}.{},{},{s}\n", .{
+                args.index,
+                args.duration.sec,
+                args.duration.nsec,
+                args.result.length,
+                try args.result.print(allocator),
+            });
+        } else {
+            std.debug.print("{},{}.{},{}\n", .{
+                args.index,
+                args.duration.sec,
+                args.duration.nsec,
+                args.result.length,
+            });
+        }
+    } else {
+        if (print_numbers) {
+            std.debug.print("|{:18} | {d}.{:010} s | {d: >16} B | {s} |\n", .{
+                args.index,
+                args.duration.sec,
+                args.duration.nsec,
+                args.result.length,
+                try args.result.print(allocator),
+            });
+        } else {
+            std.debug.print("|{:18} | {d}.{:010} s | {d: >16} B |\n", .{
+                args.index,
+                args.duration.sec,
+                args.duration.nsec,
+                args.result.length,
+            });
+        }
     }
 }
 
@@ -96,13 +134,7 @@ pub fn main() !void {
     var cur_idx: u64 = 0;
     var best_idx: u64 = 0;
 
-    if (print_numbers) {
-        std.debug.print("|  Fibonacci index  |    Time (s)    |    Size (bytes)    |   Number   |\n", .{});
-        std.debug.print("| ----------------- | -------------- | ------------------ | ---------- |\n", .{});
-    } else {
-        std.debug.print("|  Fibonacci index  |    Time (s)    |    Size (bytes)    |\n", .{});
-        std.debug.print("| ----------------- | -------------- | ------------------ |\n", .{});
-    }
+    printReportHeader();
 
     // First Checkpoint
     {
