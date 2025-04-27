@@ -55,39 +55,30 @@ fn printReportHeader() void {
 }
 
 fn report(args: *const FibonacciArgs, allocator: std.mem.Allocator) !void {
-    if (use_csv_fmt) {
-        if (print_numbers) {
-            std.debug.print("{},{}.{},{},{s}\n", .{
-                args.index,
-                args.duration.sec,
-                args.duration.nsec,
-                args.result.length,
-                try args.result.print(allocator),
-            });
+    if (print_numbers) {
+        const info = .{
+            args.index,
+            args.duration.sec,
+            args.duration.nsec,
+            args.result.length,
+            try args.result.print(allocator),
+        };
+        if (use_csv_fmt) {
+            std.debug.print("{},{}.{},{},{s}\n", info);
         } else {
-            std.debug.print("{},{}.{},{}\n", .{
-                args.index,
-                args.duration.sec,
-                args.duration.nsec,
-                args.result.length,
-            });
+            std.debug.print("|{:18} | {d}.{:010} s | {d: >16} B | {s} |\n", info);
         }
     } else {
-        if (print_numbers) {
-            std.debug.print("|{:18} | {d}.{:010} s | {d: >16} B | {s} |\n", .{
-                args.index,
-                args.duration.sec,
-                args.duration.nsec,
-                args.result.length,
-                try args.result.print(allocator),
-            });
+        const info = .{
+            args.index,
+            args.duration.sec,
+            args.duration.nsec,
+            args.result.length,
+        };
+        if (use_csv_fmt) {
+            std.debug.print("{},{}.{},{}\n", info);
         } else {
-            std.debug.print("|{:18} | {d}.{:010} s | {d: >16} B |\n", .{
-                args.index,
-                args.duration.sec,
-                args.duration.nsec,
-                args.result.length,
-            });
+            std.debug.print("|{:18} | {d}.{:010} s | {d: >16} B |\n", info);
         }
     }
 }
