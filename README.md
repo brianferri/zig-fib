@@ -20,3 +20,12 @@ zig build -Doptimize=ReleaseFast -Dimplementation=linear asm
 ```
 
 will generate a `[implementation]_[optimize].s` file under `zig-out/asm`
+
+## Flags
+
+some additional flags you may use are:
+
+| Flag                   | Description                       |
+| ---------------------- | --------------------------------- |
+| -Dprint_numbers=[bool] | print the numbers in the output   |
+| -Duse_csv_fmt=[bool]   | print the output using csv format |

@@ -7,8 +7,8 @@ pub fn build(b: *std.Build) !void {
     const fib_implementation = b.option([]const u8, "implementation", "The fibonacci algorithm to use") orelse "naive";
     const fib_implementation_path = try std.fmt.allocPrint(b.allocator, "src/implementations/{s}.zig", .{fib_implementation});
 
-    const print_numbers = b.option(bool, "print_numbers", "Whether to print the numbers being calculated while testing for <1s highest fib") orelse false;
-    const use_csv_fmt = b.option(bool, "use_csv_fmt", "When printing numbers, whether to print them using csv format (default would otherwise be a md table)") orelse false;
+    const print_numbers = b.option(bool, "print_numbers", "print the numbers in the output ") orelse false;
+    const use_csv_fmt = b.option(bool, "use_csv_fmt", "print the output using csv format") orelse false;
 
     const options = b.addOptions();
     options.addOption(bool, "print_numbers", print_numbers);
