@@ -1,6 +1,9 @@
 const std = @import("std");
 const fib_lib = @import("zig_fib_lib");
 
+const options = @import("options");
+const print_numbers = options.print_numbers;
+
 const fibonacci = fib_lib.fibonacci;
 const Number = fib_lib.Number;
 const digit_t = fib_lib.digit_t;
@@ -33,13 +36,22 @@ fn less(lhs: Timespec, rhs: Timespec) bool {
 }
 
 fn report(args: *const FibonacciArgs, allocator: std.mem.Allocator) !void {
-    std.debug.print("|{:18} | {d}.{:010} s | {d: >16} B | {s} |\n", .{
-        args.index,
-        args.duration.sec,
-        args.duration.nsec,
-        args.result.length,
-        try args.result.print(allocator),
-    });
+    if (print_numbers) {
+        std.debug.print("|{:18} | {d}.{:010} s | {d: >16} B | {s} |\n", .{
+            args.index,
+            args.duration.sec,
+            args.duration.nsec,
+            args.result.length,
+            try args.result.print(allocator),
+        });
+    } else {
+        std.debug.print("|{:18} | {d}.{:010} s | {d: >16} B |\n", .{
+            args.index,
+            args.duration.sec,
+            args.duration.nsec,
+            args.result.length,
+        });
+    }
 }
 
 fn measureFibonacciCall(args: *FibonacciArgs, allocator: std.mem.Allocator) !void {
@@ -84,8 +96,13 @@ pub fn main() !void {
     var cur_idx: u64 = 0;
     var best_idx: u64 = 0;
 
-    std.debug.print("|  Fibonacci index  |    Time (s)    |    Size (bytes)    |   Number   |\n", .{});
-    std.debug.print("| ----------------- | -------------- | ------------------ | ---------- |\n", .{});
+    if (print_numbers) {
+        std.debug.print("|  Fibonacci index  |    Time (s)    |    Size (bytes)    |   Number   |\n", .{});
+        std.debug.print("| ----------------- | -------------- | ------------------ | ---------- |\n", .{});
+    } else {
+        std.debug.print("|  Fibonacci index  |    Time (s)    |    Size (bytes)    |\n", .{});
+        std.debug.print("| ----------------- | -------------- | ------------------ |\n", .{});
+    }
 
     // First Checkpoint
     {

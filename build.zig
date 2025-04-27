@@ -7,6 +7,11 @@ pub fn build(b: *std.Build) !void {
     const fib_implementation = b.option([]const u8, "implementation", "The fibonacci algorithm to use") orelse "naive";
     const fib_implementation_path = try std.fmt.allocPrint(b.allocator, "src/implementations/{s}.zig", .{fib_implementation});
 
+    const print_numbers = b.option(bool, "print_numbers", "Whether to print the numbers being calculated while testing for <1s highest fib");
+
+    const options = b.addOptions();
+    options.addOption(bool, "print_numbers", print_numbers orelse false);
+
     const lib_mod = b.createModule(.{
         .root_source_file = b.path(fib_implementation_path),
         .target = target,
@@ -18,8 +23,8 @@ pub fn build(b: *std.Build) !void {
         .target = target,
         .optimize = optimize,
     });
-
     exe_mod.addImport("zig_fib_lib", lib_mod);
+    exe_mod.addOptions("options", options);
 
     const lib = b.addLibrary(.{
         .linkage = .static,
