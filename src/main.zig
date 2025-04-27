@@ -122,10 +122,19 @@ fn evaluateFibonacci(index: u64, allocator: std.mem.Allocator) !FibonacciArgs {
 
 pub fn main() !void {
     const allocator = std.heap.page_allocator;
-    var cur_idx: u64 = 0;
-    var best_idx: u64 = 0;
+
+    const argv = try std.process.argsAlloc(allocator);
+    defer std.process.argsFree(allocator, argv);
+    if (argv.len > 2) return error.TooManyArguments;
 
     printReportHeader();
+    if (argv.len > 1) {
+        try report(&try evaluateFibonacci(try std.fmt.parseInt(u64, argv[1], 10), allocator), allocator);
+        return;
+    }
+
+    var cur_idx: u64 = 0;
+    var best_idx: u64 = 0;
 
     // First Checkpoint
     {

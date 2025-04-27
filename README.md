@@ -2,7 +2,7 @@
 
 Zig implementation of [Fibsonisheaf](https://github.com/SheafificationOfG/Fibsonisheaf/)
 
-## build && run
+## Build && run
 
 > [!NOTE]
 > Default (if not specified) will be the `naive` implementation
@@ -13,7 +13,13 @@ zig build -Doptimize=ReleaseFast -Dimplementation=linear run
 
 > using `Debug` mode will not work as it has safety measures against integer overflows, which have yet to be patched
 
-## inspecting assembly
+You may also calculate a single fibonacci number by passing it's index as an argument
+
+```sh
+zig build -Doptimize=ReleaseFast -Dimplementation=fastexp run -- 4000000
+```
+
+## Inspecting assembly
 
 ```sh
 zig build -Doptimize=ReleaseFast -Dimplementation=linear asm
