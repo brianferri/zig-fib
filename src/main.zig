@@ -106,7 +106,7 @@ fn evaluateFibonacci(index: u64, allocator: std.mem.Allocator) !FibonacciArgs {
 
     const start_time = std.time.nanoTimestamp();
     while (true) {
-        std.time.sleep(SLEEP_DURATION_NS);
+        std.Thread.sleep(SLEEP_DURATION_NS);
         if (args.thread_completed) {
             thread.join();
             return args;
